@@ -68,14 +68,15 @@ export class GAuthService {
       const gauthPath = path.resolve(process.cwd(), this.config.gauthFile);
       const gauthData = await fs.readFile(gauthPath, 'utf8');
       const credentials = JSON.parse(gauthData);
+      const creds = credentials.installed || credentials.web;
 
-      if (!credentials.installed) {
+      if (!creds) {
         throw new Error('Invalid OAuth2 credentials format in gauth file');
       }
 
       this.oauth2Client = new google.auth.OAuth2(
-        credentials.installed.client_id,
-        credentials.installed.client_secret,
+        creds.client_id,
+        creds.client_secret,
         REDIRECT_URI
       );
     } catch (error) {
