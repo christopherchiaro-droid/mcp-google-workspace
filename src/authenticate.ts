@@ -44,13 +44,14 @@ async function authenticateAccount(gauth: GAuthService, email: string, force: bo
   const state = { state: stateNonce };
 
   const authUrl = await gauth.getAuthorizationUrl(email, state);
-  console.log(`Opening browser for ${email}...`);
+  console.log(`Authorization URL for ${email}:`);
+  console.log(authUrl);
+  console.log('Opening browser... (if it does not open, visit the URL above manually)');
 
   try {
     await open(authUrl);
   } catch {
-    console.log('Could not open browser automatically. Visit this URL manually:');
-    console.log(authUrl);
+    console.log('Could not open browser automatically. Use the URL above.');
   }
 
   return new Promise<boolean>((resolve, reject) => {
