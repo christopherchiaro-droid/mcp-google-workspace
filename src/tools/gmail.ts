@@ -365,16 +365,16 @@ export class GmailTools {
                     type: 'string',
                     description: 'ID of the Gmail message containing the attachment'
                   },
-                  part_id: {
+                  attachment_id: {
                     type: 'string',
-                    description: 'ID of the part containing the attachment'
+                    description: 'The attachmentId of the attachment, as returned in the attachments map by gmail_get_email / gmail_bulk_get_emails (not the numeric part-index key of that map)'
                   },
                   save_path: {
                     type: 'string',
                     description: 'Relative path (under GMAIL_ATTACHMENTS_DIR, default ~/.mcp-gsuite/attachments) where the attachment is written. Absolute paths and traversal (e.g. "../") are rejected.'
                   }
                 },
-                required: ['message_id', 'part_id', 'save_path']
+                required: ['message_id', 'attachment_id', 'save_path']
               }
             }
           },
@@ -1019,17 +1019,17 @@ export class GmailTools {
       const results = await Promise.all(
         attachments.map(async (attachmentInfo: any) => {
           const messageId = attachmentInfo.message_id;
-          const partId = attachmentInfo.part_id;
+          const attachmentId = attachmentInfo.attachment_id;
           const savePath = attachmentInfo.save_path;
 
-          if (!messageId || !partId || !savePath) {
-            throw new Error('Missing required arguments: message_id, part_id, or save_path');
+          if (!messageId || !attachmentId || !savePath) {
+            throw new Error('Missing required arguments: message_id, attachment_id, or save_path');
           }
 
           const attachmentData = await this.gmail.users.messages.attachments.get({
             userId,
             messageId,
-            id: partId
+            id: attachmentId
           });
 
           const fileData = attachmentData.data.data;
@@ -1044,7 +1044,7 @@ export class GmailTools {
 
           return {
             messageId,
-            partId,
+            attachmentId,
             savePath,
             status: 'success'
           };
